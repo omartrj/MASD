@@ -1,0 +1,19 @@
+{
+    "stations": [
+        {
+            "name": "Perugia",
+            "id": "perugia",
+            "num_sensors": 3
+        },
+        {
+            "name": "Roma",
+            "id": "roma",
+            "num_sensors": 10
+        },
+        {
+            "name": "Milano",
+            "id": "milano",
+            "num_sensors": 5
+        }
+    ]
+}
