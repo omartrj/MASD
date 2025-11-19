@@ -40,6 +40,32 @@ docker compose --profile kafka-ui --profile mongo-ui up -d
 
 Premi `CTRL+C` per fermare i simulatori.
 
+## Configurazione Simulatori
+
+I simulatori sono configurati tramite il file `simulator/config.json`:
+
+```json
+{
+    "sensors": {
+        "send_interval": {
+            "mean_ms": 250,        // Intervallo medio di invio in millisecondi
+            "stddev_pct": 0.2      // Deviazione standard (20%)
+        },
+        "malformation_pct": 0.05   // Percentuale di dati malformati (5%)
+    },
+    "stations": [
+        {
+            "name": "Perugia",     // Nome stazione
+            "id": "perugia",       // ID univoco (usato per topic Kafka e collezione MongoDB)
+            "num_sensors": 3       // Numero di sensori per questa stazione
+        },
+        // ... altre stazioni
+    ]
+}
+```
+
+Ogni stazione viene avviata come container Docker separato e pubblica su un topic Kafka dedicato: `sensors.raw.<station_id>`.
+
 ## Struttura
 
 ```text
