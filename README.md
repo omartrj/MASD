@@ -44,7 +44,7 @@ Premi `CTRL+C` per fermare i simulatori.
 
 I simulatori sono configurati tramite il file `simulator/config.json`:
 
-```json
+```jsonc
 {
     "sensors": {
         "send_interval": {
