@@ -63,6 +63,9 @@ for i in $(seq 0 $((STATION_COUNT - 1))); do
     NAME=$(jq -r ".stations[$i].name" "$CONFIG_FILE")
     ID=$(jq -r ".stations[$i].id" "$CONFIG_FILE")
     NUM_SENSORS=$(jq -r ".stations[$i].num_sensors" "$CONFIG_FILE")
+    INTERVAL_MEAN_MS=$(jq -r ".sensors.send_interval.mean_ms" "$CONFIG_FILE")
+    INTERVAL_STDDEV_PCT=$(jq -r ".sensors.send_interval.stddev_pct" "$CONFIG_FILE")
+    MALFORMED_PCT=$(jq -r ".sensors.malformation_pct" "$CONFIG_FILE")
     
     CONTAINER_ID=$(docker run -d \
         --name "simulator-${ID}" \
@@ -74,9 +77,10 @@ for i in $(seq 0 $((STATION_COUNT - 1))); do
         -e PROJECT_GITHUB="$GITHUB_REPO" \
         -e SIM_STATION_NAME="$NAME" \
         -e SIM_STATION_ID="$ID" \
-        -e SIM_INTERVAL_MS="$SIM_INTERVAL_MS" \
         -e SIM_NUM_SENSORS="$NUM_SENSORS" \
-        -e SIM_MALFORMED_PCT="$SIM_MALFORMED_PCT" \
+        -e SIM_INTERVAL_MEAN_MS="$INTERVAL_MEAN_MS" \
+        -e SIM_INTERVAL_STDDEV_PCT="$INTERVAL_STDDEV_PCT" \
+        -e SIM_MALFORMED_PCT="$MALFORMED_PCT" \
         -e KAFKA_BOOTSTRAP_SERVERS="$KAFKA_BOOTSTRAP_SERVERS" \
         -e KAFKA_TOPIC_PREFIX="$KAFKA_TOPIC_PREFIX" \
         masd-simulator:latest)

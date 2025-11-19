@@ -1,4 +1,11 @@
 {
+    "sensors": {
+        "send_interval": {
+            "mean_ms": 250,
+            "stddev_pct": 0.2
+        },
+        "malformation_pct": 0.05
+    },
     "stations": [
         {
             "name": "Perugia",

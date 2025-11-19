@@ -16,12 +16,13 @@ KAFKA_BOOTSTRAP_SERVERS = os.getenv("KAFKA_BOOTSTRAP_SERVERS")
 KAFKA_TOPIC_PREFIX = os.getenv("KAFKA_TOPIC_PREFIX")
 SIM_STATION_NAME = os.getenv("SIM_STATION_NAME")
 SIM_STATION_ID = os.getenv("SIM_STATION_ID")
-SIM_INTERVAL_MS = int(os.getenv("SIM_INTERVAL_MS"))
 SIM_NUM_SENSORS = int(os.getenv("SIM_NUM_SENSORS"))
+SIM_INTERVAL_MEAN_MS = int(os.getenv("SIM_INTERVAL_MEAN_MS"))
+SIM_INTERVAL_STDDEV_PCT = float(os.getenv("SIM_INTERVAL_STDDEV_PCT"))
 SIM_MALFORMED_PCT = float(os.getenv("SIM_MALFORMED_PCT"))
 
-# Deviazione standard: 20% della media per distribuzione realistica
-INTERVAL_STD_DEV = SIM_INTERVAL_MS * 0.2
+
+SIM_INTERVAL_STD_DEV = SIM_INTERVAL_MEAN_MS * SIM_INTERVAL_STDDEV_PCT
 
 # Prendi l'ID della stazione dal nome host del container
 #STATION_ID = os.getenv("HOSTNAME")
@@ -87,7 +88,7 @@ def make_payload(sensor_id):
 async def sensor_task(sensor_id):
     """Task asincrono che simula un sensore che pubblica dati a intervalli regolari."""
     # Offset iniziale per distribuire le pubblicazioni nel tempo
-    await asyncio.sleep(sensor_id * (SIM_INTERVAL_MS / 1000) / SIM_NUM_SENSORS)
+    await asyncio.sleep(sensor_id * (SIM_INTERVAL_MEAN_MS / 1000) / SIM_NUM_SENSORS)
     
     while True:
         payload = make_payload(sensor_id)
@@ -97,7 +98,7 @@ async def sensor_task(sensor_id):
         
         # Genera intervallo con distribuzione gaussiana
         # max(0, ...) per evitare valori negativi
-        interval_seconds = max(0, random.gauss(SIM_INTERVAL_MS, INTERVAL_STD_DEV) / 1000)
+        interval_seconds = max(0, random.gauss(SIM_INTERVAL_MEAN_MS, SIM_INTERVAL_STD_DEV) / 1000)
         #print(f"[SENSOR_{sensor_id}] Next in {interval_seconds*1000:.2f} ms")
         await asyncio.sleep(interval_seconds)
 
@@ -112,7 +113,8 @@ async def main():
     print("="*70)
     print(f"AVVIO SIMULATORE STAZIONE - {SIM_STATION_NAME} (ID: {SIM_STATION_ID})")
     print(f"  - # Sensori: {SIM_NUM_SENSORS}")
-    print(f"  - Intervallo medio d'invio: {SIM_INTERVAL_MS}ms")
+    print(f"  - Intervallo medio d'invio: {SIM_INTERVAL_MEAN_MS}ms")
+    print(f"  - Deviazione standard intervallo: {SIM_INTERVAL_STDDEV_PCT*100}%")
     print(f"  - Pacchetti malformati: {SIM_MALFORMED_PCT*100}%")
     print(f"  - Invio pacchetti a {KAFKA_BOOTSTRAP_SERVERS} | Topic: {TOPIC}")
     print("="*70)
