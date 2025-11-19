@@ -30,6 +30,14 @@ set -a
 source .env
 set +a
 
+# === ATTENDI SPARK APP HEALTHY ===
+echo "Attendo che spark-app sia healthy..."
+until [ "$(docker inspect -f '{{.State.Health.Status}}' spark-app 2>/dev/null)" = "healthy" ]; do 
+    sleep 2
+done
+echo "✓ spark-app is healthy"
+echo ""
+
 # === BUILD IMMAGINE ===
 echo "Build immagine simulator..."
 docker build -q -t masd-simulator:latest ./simulator
