@@ -162,7 +162,7 @@ def main():
     # Serve per l'healthcheck del container
     import pathlib
     pathlib.Path("/tmp/spark-ready").touch()
-    log("Spark application pronta, in attesa di dati da Kafka...")
+    log("Spark App pronta, in attesa di dati da Kafka...")
     
     # Attendi la terminazione dello stream
     stats_query.awaitTermination()
