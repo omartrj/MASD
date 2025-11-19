@@ -78,5 +78,4 @@ docker compose --profile kafka-ui --profile mongo-ui down -v
 
 ## Sviluppi Futuri
 
-- **MongoDB Replica Set**: configurare MongoDB in modalità replica set per alta disponibilità e fault tolerance
 - **Spark su YARN**: migrare l'esecuzione di Spark da `--master local[*]` a `--master yarn` per sfruttare il cluster Hadoop distribuito già presente nel docker-compose

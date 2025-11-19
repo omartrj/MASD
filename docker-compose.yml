@@ -187,8 +187,14 @@ services:
         condition: service_healthy
       kafka3:
         condition: service_healthy
-      mongodb:
-        condition: service_started
+      mongodb-primary:
+        condition: service_healthy
+      mongodb-secondary1:
+        condition: service_healthy
+      mongodb-secondary2:
+        condition: service_healthy
+      mongodb-init:
+        condition: service_completed_successfully
     environment:
       - HADOOP_CONF_DIR=/opt/hadoop/etc/hadoop
       - YARN_CONF_DIR=/opt/hadoop/etc/hadoop
@@ -202,6 +208,8 @@ services:
       - KAFKA_TOPIC_PREFIX=${KAFKA_TOPIC_PREFIX}
       - MONGO_URI=${MONGO_URI}
       - MONGO_DATABASE=${MONGO_DATABASE}
+      - MONGO_WRITE_CONCERN=${MONGO_WRITE_CONCERN}
+      - MONGO_READ_PREFERENCE=${MONGO_READ_PREFERENCE}
       - SPARK_AGGREGATE_TRIGGER_INTERVAL=${SPARK_AGGREGATE_TRIGGER_INTERVAL}
       - SPARK_AGGREGATE_WINDOW=${SPARK_AGGREGATE_WINDOW}
       - SPARK_AGGREGATE_SLIDE=${SPARK_AGGREGATE_SLIDE}
@@ -225,12 +233,92 @@ services:
     networks:
       - masd-network
 
-  # === MONGODB DATABASE ===
-  mongodb:
+  # === MONGODB REPLICA SET ===
+  # 3 nodi: 1 primary + 2 secondary
+  mongodb-primary:
     image: mongo:8.2
-    container_name: mongodb
+    container_name: mongodb-primary
+    hostname: mongodb-primary
+    command: ["--replSet", "rs0", "--bind_ip_all"]
     volumes:
-      - mongo-data:/data/db
+      - mongo-primary-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks:
+      - masd-network
+
+  mongodb-secondary1:
+    image: mongo:8.2
+    container_name: mongodb-secondary1
+    hostname: mongodb-secondary1
+    command: ["--replSet", "rs0", "--bind_ip_all"]
+    volumes:
+      - mongo-secondary1-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks:
+      - masd-network
+
+  mongodb-secondary2:
+    image: mongo:8.2
+    container_name: mongodb-secondary2
+    hostname: mongodb-secondary2
+    command: ["--replSet", "rs0", "--bind_ip_all"]
+    volumes:
+      - mongo-secondary2-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks:
+      - masd-network
+
+  # Inizializzazione del replica set
+  mongodb-init:
+    image: mongo:8.2
+    container_name: mongodb-init
+    depends_on:
+      mongodb-primary:
+        condition: service_healthy
+      mongodb-secondary1:
+        condition: service_healthy
+      mongodb-secondary2:
+        condition: service_healthy
+    # Il comando:
+    #   - Inizializza il replica set con 1 primary e 2 secondary
+    #   - Attende che tutti i membri del replica set siano pronti (stato 1 o 2)
+    # Termina con successo quando il replica set è pronto
+    command: >
+      bash -c "
+      mongosh --host mongodb-primary:27017 --eval '
+      rs.initiate({
+        _id: \"rs0\",
+        members: [
+          { _id: 0, host: \"mongodb-primary:27017\", priority: 2 },
+          { _id: 1, host: \"mongodb-secondary1:27017\", priority: 1 },
+          { _id: 2, host: \"mongodb-secondary2:27017\", priority: 1 }
+        ]
+      })' &&
+      echo 'Replica set initiated, waiting for members to be ready...' &&
+      until mongosh --host mongodb-primary:27017 --quiet --eval '
+        const status = rs.status();
+        const ready = status.members.every(m => m.state === 1 || m.state === 2);
+        quit(ready ? 0 : 1);
+      '; do
+        sleep 2;
+      done &&
+      echo 'Replica set is ready!'
+      "
     networks:
       - masd-network
 
@@ -242,11 +330,18 @@ services:
     profiles:
       - mongo-ui
     depends_on:
-      - mongodb
+      mongodb-primary:
+        condition: service_healthy
+      mongodb-secondary1:
+        condition: service_healthy
+      mongodb-secondary2:
+        condition: service_healthy
+      mongodb-init:
+        condition: service_completed_successfully
     ports:
       - 8081:8081
     environment:
-      ME_CONFIG_MONGODB_URL: ${MONGO_URI}
+      ME_CONFIG_MONGODB_URL: ${MONGO_URI}&readPreference=${MONGO_READ_PREFERENCE}
       ME_CONFIG_BASICAUTH: false
     networks:
       - masd-network
@@ -257,8 +352,12 @@ volumes:
   # Per questo motivo uso questo volume per condividere i file di configurazione generati tra i container hadoop e spark.
   hadoop-config:
     name: hadoop-config
-  mongo-data:
-    name: mongo-data
+  mongo-primary-data:
+    name: mongo-primary-data
+  mongo-secondary1-data:
+    name: mongo-secondary1-data
+  mongo-secondary2-data:
+    name: mongo-secondary2-data
 
 networks:
   masd-network:

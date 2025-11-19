@@ -19,6 +19,7 @@ KAFKA_BOOTSTRAP_SERVERS = os.getenv("KAFKA_BOOTSTRAP_SERVERS")
 KAFKA_TOPIC_PREFIX = os.getenv("KAFKA_TOPIC_PREFIX")
 MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DATABASE = os.getenv("MONGO_DATABASE")
+MONGO_WRITE_CONCERN = os.getenv("MONGO_WRITE_CONCERN", "majority")
 SPARK_AGGREGATE_TRIGGER_INTERVAL = os.getenv("SPARK_AGGREGATE_TRIGGER_INTERVAL")
 SPARK_AGGREGATE_WINDOW = os.getenv("SPARK_AGGREGATE_WINDOW")
 SPARK_AGGREGATE_SLIDE = os.getenv("SPARK_AGGREGATE_SLIDE")
@@ -75,6 +76,7 @@ def write_aggregates(batch_df, batch_id):
             .option("spark.mongodb.connection.uri", MONGO_URI) \
             .option("spark.mongodb.database", MONGO_DATABASE) \
             .option("spark.mongodb.collection", station_id) \
+            .option("spark.mongodb.write.writeConcern.w", MONGO_WRITE_CONCERN) \
             .save()
         
         log(f"Batch {batch_id} | {station_id}: {stat_count} aggregati scritti | Finestra: [{window_start} → {window_end}]")
@@ -89,6 +91,7 @@ def main():
     spark = SparkSession.builder \
         .appName(PROJECT_NAME) \
         .config("spark.mongodb.connection.uri", MONGO_URI) \
+        .config("spark.mongodb.write.writeConcern.w", MONGO_WRITE_CONCERN) \
         .getOrCreate()
     
     spark.sparkContext.setLogLevel("ERROR")
