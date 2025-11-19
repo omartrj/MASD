@@ -6,13 +6,13 @@
             "num_sensors": 3
         },
         {
-            "name": "Roma",
-            "id": "roma",
+            "name": "Foligno",
+            "id": "foligno",
             "num_sensors": 10
         },
         {
-            "name": "Milano",
-            "id": "milano",
+            "name": "Spoleto",
+            "id": "spoleto",
             "num_sensors": 5
         }
     ]
