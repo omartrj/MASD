@@ -44,14 +44,19 @@ Premi `CTRL+C` per fermare i simulatori.
 
 ```text
 .
+├── .env                        # Variabili d'ambiente
 ├── docker-compose.yml          # Stack completo
+├── hadoop.config               # Configurazione Hadoop
 ├── run_simulation.sh           # Script per avviare i simulatori
-├── simulator/                  # Producer Kafka
+├── README.md                   
+├── simulator/                  # Simulatore (Producer)
 │   ├── producer.py
-│   ├── config.json
+│   ├── config.json             # Configurazione simulazione   
+│   ├── requirements.txt
 │   └── Dockerfile
-└── spark-app/                  # Consumer Spark
+└── spark-app/                  # Spark Application (Consumer)
     ├── consumer.py
+    ├── requirements.txt
     └── Dockerfile
 ```
 
