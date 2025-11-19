@@ -1,0 +1,58 @@
+services:
+
+  # === HADOOP CLUSTER ===
+  # I container hadoop usano un file di configurazione in formato KEY=VALUE
+  # ricavato dalla guida ufficiale del container apache/hadoop.
+  # https://hub.docker.com/r/apache/hadoop
+  # Datanode scalabili usando --scale hdfs-datanode=n
+  hdfs-namenode:
+    image: apache/hadoop:3
+    hostname: namenode
+    container_name: hdfs-namenode
+    command: ["hdfs", "namenode"]
+    ports:
+      - 9870:9870
+    volumes:
+      - hadoop-config:${HADOOP_HOME}/etc/hadoop
+    env_file:
+      - ./../hadoop.config
+    environment:
+      ENSURE_NAMENODE_DIR: "/tmp/hadoop-root/dfs/name"
+    networks:
+      - masd-network
+  
+  hdfs-datanode:
+    image: apache/hadoop:3
+    command: ["hdfs", "datanode"]
+    env_file:
+      - ./../hadoop.config
+    volumes:
+      - hadoop-config:${HADOOP_HOME}/etc/hadoop
+    networks:
+      - masd-network
+  
+  # === YARN CLUSTER ===
+  # Nodemanager scalabili usando --scale yarn-nodemanager=n
+  yarn-resourcemanager:
+    image: apache/hadoop:3
+    hostname: resourcemanager
+    container_name: yarn-resourcemanager
+    command: ["yarn", "resourcemanager"]
+    ports:
+      - 8088:8088
+    env_file:
+      - ./../hadoop.config
+    volumes:
+      - hadoop-config:${HADOOP_HOME}/etc/hadoop
+    networks:
+      - masd-network
+  
+  yarn-nodemanager:
+    image: apache/hadoop:3
+    command: ["yarn", "nodemanager"]
+    env_file:
+      - ./../hadoop.config
+    volumes:
+      - hadoop-config:${HADOOP_HOME}/etc/hadoop
+    networks:
+      - masd-network

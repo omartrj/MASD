@@ -1,0 +1,65 @@
+services:
+
+  # === SPARK APPLICATION ===
+  spark-app:
+    build:
+      context: ./spark-app
+      dockerfile: Dockerfile
+    container_name: spark-app
+    hostname: spark-app
+    ports:
+      - 4040:4040
+    depends_on:
+      yarn-resourcemanager:
+        condition: service_started
+      kafka1:
+        condition: service_healthy
+      kafka2:
+        condition: service_healthy
+      kafka3:
+        condition: service_healthy
+      mongodb-primary:
+        condition: service_healthy
+      mongodb-secondary1:
+        condition: service_healthy
+      mongodb-secondary2:
+        condition: service_healthy
+      mongodb-init:
+        condition: service_completed_successfully
+    environment:
+      - HADOOP_CONF_DIR=/opt/hadoop/etc/hadoop
+      - YARN_CONF_DIR=/opt/hadoop/etc/hadoop
+      - HADOOP_USER_NAME=hadoop
+      - PROJECT_NAME=${PROJECT_NAME}
+      - PROJECT_VERSION=${VERSION}
+      - PROJECT_AUTHOR=${AUTHOR}
+      - PROJECT_EMAIL=${EMAIL}
+      - PROJECT_GITHUB=${GITHUB_REPO}
+      - KAFKA_BOOTSTRAP_SERVERS=${KAFKA_BOOTSTRAP_SERVERS}
+      - KAFKA_TOPIC_PREFIX=${KAFKA_TOPIC_PREFIX}
+      - MONGO_URI=${MONGO_URI}
+      - MONGO_DATABASE=${MONGO_DATABASE}
+      - MONGO_WRITE_CONCERN=${MONGO_WRITE_CONCERN}
+      - MONGO_READ_PREFERENCE=${MONGO_READ_PREFERENCE}
+      - SPARK_AGGREGATE_TRIGGER_INTERVAL=${SPARK_AGGREGATE_TRIGGER_INTERVAL}
+      - SPARK_AGGREGATE_WINDOW=${SPARK_AGGREGATE_WINDOW}
+      - SPARK_AGGREGATE_SLIDE=${SPARK_AGGREGATE_SLIDE}
+      - SPARK_AGGREGATE_WATERMARK=${SPARK_AGGREGATE_WATERMARK}
+      - SPARK_AGGREGATE_CHECKPOINT_DIR=${SPARK_AGGREGATE_CHECKPOINT_DIR}
+    volumes:
+      - hadoop-config:/opt/hadoop/etc/hadoop # <-- Usa i file di configurazione generati dai container hadoop
+    command: >
+      /opt/spark/bin/spark-submit
+      --master local[*]
+      --deploy-mode client
+      --conf "spark.driver.extraJavaOptions=-Divy.home=/opt/spark/.ivy2 -Djava.io.tmpdir=/opt/spark/tmp"
+      --packages org.apache.spark:spark-sql-kafka-0-10_2.13:4.0.1,org.mongodb.spark:mongo-spark-connector_2.13:10.5.0
+      /opt/spark/work-dir/consumer.py
+    healthcheck:
+      test: ["CMD", "test", "-f", "/tmp/spark-ready"]
+      interval: 5s
+      timeout: 3s
+      retries: 60
+      start_period: 10s
+    networks:
+      - masd-network

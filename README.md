@@ -71,7 +71,12 @@ Ogni stazione viene avviata come container Docker separato e pubblica su un topi
 ```text
 .
 ├── .env                        # Variabili d'ambiente
-├── docker-compose.yml          # Stack completo
+├── docker-compose.yml          # Orchestrazione principale
+├── compose/                    
+│   ├── kafka.yml               # Cluster Kafka (Zookeeper, 3 brokers, UI)
+│   ├── mongodb.yml             # Replica Set MongoDB (3 nodi, UI)
+│   ├── hadoop.yml              # Cluster Hadoop (HDFS + YARN)
+│   └── spark.yml               # Applicazione Spark
 ├── hadoop.config               # Configurazione Hadoop
 ├── run_simulation.sh           # Script per avviare i simulatori
 ├── README.md                   
