@@ -50,6 +50,11 @@ services:
       /opt/spark/bin/spark-submit
       --master yarn
       --deploy-mode client
+      --num-executors 3                 
+      --executor-cores 2                
+      --executor-memory 2G            
+      --driver-memory 2G                
+      --conf spark.yarn.am.cores=2      
       --conf "spark.driver.extraJavaOptions=-Divy.home=/opt/spark/.ivy2 -Djava.io.tmpdir=/opt/spark/tmp"
       --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.7,org.mongodb.spark:mongo-spark-connector_2.12:10.5.0
       /opt/spark/work-dir/consumer.py
