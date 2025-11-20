@@ -90,12 +90,12 @@ services:
       - masd-network
 
   # === MONGODB UI ===
-  # Per avviare: docker-compose --profile mongo-ui up -d
+  # Per avviare: docker-compose --profile web-ui up -d
   mongo-express:
     image: mongo-express:latest
     container_name: mongo-express
     profiles:
-      - mongo-ui
+      - web-ui
     depends_on:
       mongodb-primary:
         condition: service_healthy

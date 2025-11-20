@@ -90,10 +90,10 @@ services:
       - masd-network
 
   # === KAFKA UI ===
-  # Per avviare: docker-compose --profile kafka-ui up -d 
+  # Per avviare: docker-compose --profile web-ui up -d 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
-    container_name: kafka-ui
+    container_name: web-ui
     profiles:
       - kafka-ui
     depends_on:

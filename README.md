@@ -34,7 +34,7 @@ docker compose up -d --build
 2. (Opzionale) Avvia le UI web:
 
 ```bash
-docker compose --profile kafka-ui --profile mongo-ui up -d
+docker compose --profile web-ui up -d --build
 ```
 
 3. Avvia i simulatori:
