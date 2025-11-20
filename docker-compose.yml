@@ -1,5 +1,6 @@
 # MASD — Monitoring & Analytics of Streaming Data
 # File principale
+name: masd
 
 include:
   - compose/kafka.yml
@@ -14,10 +15,11 @@ networks:
 
 volumes:
   # I container apache/hadoop generano le configurazioni xml a partire da un file in formato
-  # KEY=VALUE. I container apache/spark invece si aspettano di trovare i file xml direttamente.
+  # KEY=VALUE. Il container spark usato da spark-app invece si aspetta di trovare direttamente i file xml.
   # Per questo motivo uso questo volume per condividere i file di configurazione generati tra i container hadoop e spark.
   hadoop-config:
     name: hadoop-config
+  # Volumi per i dati di MongoDB
   mongo-primary-data:
     name: mongo-primary-data
   mongo-secondary1-data:
