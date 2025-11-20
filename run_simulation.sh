@@ -81,7 +81,7 @@ for i in $(seq 0 $((STATION_COUNT - 1))); do
         masd-simulator:latest)
     
     CONTAINER_IDS+=("$CONTAINER_ID")
-    echo "✓ $NAME ($SENSORS sensori) - simulator-${ID}"
+    echo "✓ $NAME ($NUM_SENSORS sensori) - simulator-${ID}"
 done
 
 echo ""
