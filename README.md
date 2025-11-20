@@ -158,5 +158,5 @@ docker compose down
 docker compose down -v
 
 # (Se sono state avviate le UI web)
-docker compose --profile kafka-ui --profile mongo-ui down -v
+docker compose --profile web-ui down -v
 ```
