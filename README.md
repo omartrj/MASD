@@ -40,7 +40,19 @@ docker compose --profile kafka-ui --profile mongo-ui up -d
 
 Premi `CTRL+C` per fermare i simulatori.
 
-> **Nota**: Se non vuoi installare `jq` (*scaricalo, è utile*), puoi avviare i simulatori manualmente. Prima assicurati che `spark-app` sia healthy (`docker ps` e controlla lo stato di salute), carica le variabili d'ambiente (`source .env`), poi esegui per ogni stazione che vuoi avviare:
+> **Nota**: Se non vuoi installare `jq` (*scaricalo, è utile*), puoi avviare i simulatori manualmente. Prima assicurati che `spark-app` sia healthy (`docker ps` e controlla lo stato di salute), poi:
+> 
+> 1. Builda l'immagine del simulatore:
+> ```bash
+> docker build -t masd-simulator:latest ./simulator
+> ```
+> 
+> 2. Carica le variabili d'ambiente:
+> ```bash
+> source .env
+> ```
+> 
+> 3. Avvia ogni stazione che vuoi eseguire:
 > ```bash
 > docker run -d \
 >   --name "simulator-<station_id>" \
