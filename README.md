@@ -20,59 +20,79 @@ Pipeline di streaming data che simula sensori IoT, invia i dati a Kafka, li proc
 
 ## Quick Start
 
-1. Avvia lo stack completo:
+### Avvio Base
+
+Avvia l'intera infrastruttura (Kafka, MongoDB, Hadoop, Spark):
 
 ```bash
 docker compose up -d --build
 ```
 
-> **Tip**: Per scalare il cluster Hadoop, aggiungi `--scale`:
-> ```bash
-> docker compose up -d --build --scale hdfs-datanode=2 --scale yarn-nodemanager=2
-> ```
-
-2. (Opzionale) Avvia le UI web:
+Per avviare anche le interfacce web per Kafka e MongoDB (opzionali), usa questo comando:
 
 ```bash
 docker compose --profile web-ui up -d --build
 ```
 
-3. Avvia i simulatori:
+Le UI saranno disponibili su:
+- **Hadoop NameNode**: http://localhost:9870
+- **YARN ResourceManager**: http://localhost:8088
+- **Kafka UI**: http://localhost:8080 (se avviato)
+- **Mongo Express**: http://localhost:8081 (se avviato)
+
+### Avvio Simulatori
+
+Una volta che lo stack è pronto, avvia i simulatori:
 
 ```bash
 ./run_simulation.sh -c simulator/config.json
 ```
 
-Premi `CTRL+C` per fermare i simulatori.
+Questo script legge la configurazione dal file JSON e avvia un container per ogni stazione definita.
 
-> **Nota**: Se non vuoi installare `jq` (*scaricalo, è utile*), puoi avviare i simulatori manualmente. Prima assicurati che `spark-app` sia healthy (`docker ps` e controlla lo stato di salute), poi:
-> 
-> 1. Builda l'immagine del simulatore:
-> ```bash
-> docker build -t masd-simulator:latest ./simulator
-> ```
-> 
-> 2. Carica le variabili d'ambiente:
-> ```bash
-> source .env
-> ```
-> 
-> 3. Avvia ogni stazione che vuoi eseguire:
-> ```bash
-> docker run -d \
->   --name "simulator-<station_id>" \
->   --network "masd-network" \
->   -e SIM_STATION_NAME="<station_name>" \
->   -e SIM_STATION_ID="<station_id>" \
->   -e SIM_NUM_SENSORS="<num_sensors>" \
->   -e SIM_INTERVAL_MEAN_MS="<mean_ms>" \
->   -e SIM_INTERVAL_STDDEV_PCT="<stddev_pct>" \
->   -e SIM_MALFORMED_PCT="<malformation_pct>" \
->   -e KAFKA_BOOTSTRAP_SERVERS="$KAFKA_BOOTSTRAP_SERVERS" \
->   -e KAFKA_TOPIC_PREFIX="$KAFKA_TOPIC_PREFIX" \
->   masd-simulator:latest
-> ```
-> Sostituisci i valori tra `<>` con i parametri desiderati per la stazione.
+Per fermare i simulatori, premi `CTRL+C`. Lo script terminerà automaticamente tutti i container.
+
+### Scalare il Cluster Hadoop (Opzionale)
+
+Per aumentare la capacità del cluster Hadoop, aggiungi più nodi durante l'avvio:
+
+```bash
+docker compose up -d --build --scale hdfs-datanode=2 --scale yarn-nodemanager=2
+```
+
+---
+
+### Avvio Manuale dei Simulatori (senza jq)
+
+Se non hai `jq` installato (scaricalo, è utile!), puoi avviare i simulatori manualmente:
+
+1. **Builda l'immagine del simulatore:**
+   ```bash
+   docker build -t masd-simulator:latest ./simulator
+   ```
+
+2. **Carica le variabili d'ambiente:**
+   ```bash
+   source .env
+   ```
+
+3. **Avvia ogni stazione manualmente:**
+   ```bash
+   docker run -d \
+     --name "simulator-<station_id>" \
+     --network "masd-network" \
+     -e SIM_STATION_NAME="<station_name>" \
+     -e SIM_STATION_ID="<station_id>" \
+     -e SIM_NUM_SENSORS="<num_sensors>" \
+     -e SIM_INTERVAL_MEAN_MS="<mean_ms>" \
+     -e SIM_INTERVAL_STDDEV_PCT="<stddev_pct>" \
+     -e SIM_MALFORMED_PCT="<malformation_pct>" \
+     -e KAFKA_BOOTSTRAP_SERVERS="$KAFKA_BOOTSTRAP_SERVERS" \
+     -e KAFKA_TOPIC_PREFIX="$KAFKA_TOPIC_PREFIX" \
+     masd-simulator:latest
+   ```
+   
+   Sostituisci i valori tra `<>` con i parametri desiderati per la stazione (vedi `simulator/config.json`).
 
 ## Configurazione Simulatori
 
