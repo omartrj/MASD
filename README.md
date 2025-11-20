@@ -40,6 +40,28 @@ docker compose --profile kafka-ui --profile mongo-ui up -d
 
 Premi `CTRL+C` per fermare i simulatori.
 
+> **Nota**: Se non vuoi installare `jq` (*scaricalo, è utile*), puoi avviare i simulatori manualmente. Prima assicurati che `spark-app` sia healthy (`docker ps` e controlla lo stato di salute), carica le variabili d'ambiente (`source .env`), poi esegui per ogni stazione che vuoi avviare:
+> ```bash
+> docker run -d \
+>   --name "simulator-<station_id>" \
+>   --network "masd-network" \
+>   -e PROJECT_NAME="$PROJECT_NAME" \
+>   -e PROJECT_VERSION="$VERSION" \
+>   -e PROJECT_AUTHOR="$AUTHOR" \
+>   -e PROJECT_EMAIL="$EMAIL" \
+>   -e PROJECT_GITHUB="$GITHUB_REPO" \
+>   -e SIM_STATION_NAME="<station_name>" \
+>   -e SIM_STATION_ID="<station_id>" \
+>   -e SIM_NUM_SENSORS=<num_sensors> \
+>   -e SIM_INTERVAL_MEAN_MS=<mean_ms> \
+>   -e SIM_INTERVAL_STDDEV_PCT=<stddev_pct> \
+>   -e SIM_MALFORMED_PCT=<malformation_pct> \
+>   -e KAFKA_BOOTSTRAP_SERVERS="$KAFKA_BOOTSTRAP_SERVERS" \
+>   -e KAFKA_TOPIC_PREFIX="$KAFKA_TOPIC_PREFIX" \
+>   masd-simulator:latest
+> ```
+> Sostituisci i valori tra `<>` con i parametri desiderati per la stazione.
+
 ## Configurazione Simulatori
 
 I simulatori sono configurati tramite il file `simulator/config.json`:
