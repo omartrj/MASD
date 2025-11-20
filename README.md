@@ -4,8 +4,22 @@ Progetto per l'esame di **Data Intensive Application & Big Data**, Università d
 
 Pipeline di streaming data che simula sensori IoT, invia i dati a Kafka, li processa con Spark su un cluster Hadoop ed infine li salva su MongoDB. Ambiente completamente containerizzato con Docker Compose.
 
+**Autore**: Omar Criacci (omar.criacci@student.unipg.it)  
+**Versione**: 1.0.0
+
+## Indice
+- [Architettura](#architettura)
+- [Prerequisiti](#prerequisiti)
+- [Quick Start](#quickstart)
+    - [Automatico (Consigliato)](#automatico-consigliato)
+    - [Manuale](#avvio-manuale)
+- [Configurazione Simulatori](#configurazione-simulatori)
+- [Struttura](#struttura)
+- [Comandi Utili](#comandi-utili)
+
 ## Architettura
 
+La pipeline si compone di diversi componenti:
 - **Simulatore**: producer Python che genera dati sensori e li pubblica su Kafka
 - **Kafka + ZooKeeper**: message broker per lo streaming dei dati
 - **Spark**: consumer che aggrega i dati in real-time su un cluster Hadoop
@@ -18,65 +32,51 @@ Pipeline di streaming data che simula sensori IoT, invia i dati a Kafka, li proc
 - jq (opzionale, per lo script di simulazione)
 - Almeno 8 GB di RAM
 
-## Quick Start
+## Quickstart
 
-### Avvio Base
+### Automatico (Consigliato)
 
-Avvia l'intera infrastruttura (Kafka, MongoDB, Hadoop, Spark):
+1. Clona il repository:
+   ```bash
+   git clone https://github.com/omarcriacci/MASD.git
+   cd MASD
+   ```
 
-```bash
-docker compose up -d --build
-```
+2. Avvia l'intero stack (Kafka, MongoDB, Hadoop, Spark):
+   ```bash
+   docker compose up -d --build
+   ```
 
-Per avviare anche le interfacce web per Kafka e MongoDB (opzionali), usa questo comando:
+   Per avviare anche le interfacce web per Kafka e MongoDB (opzionali):
+   ```bash
+   docker compose --profile web-ui up -d --build
+   ```
 
-```bash
-docker compose --profile web-ui up -d --build
-```
+   Inoltre è possibile scalare il cluster Hadoop aggiungendo nodi (opzionale):
+   ```bash
+   docker compose up -d --build --scale hdfs-datanode=2 --scale yarn-nodemanager=2
+   ```
 
-Le UI saranno disponibili su:
-- **Hadoop NameNode**: http://localhost:9870
-- **YARN ResourceManager**: http://localhost:8088
-- **Kafka UI**: http://localhost:8080 (se avviato)
-- **Mongo Express**: http://localhost:8081 (se avviato)
+3. Avvia i simulatori:
+   ```bash
+   ./run_simulation.sh -c simulator/config.json
+   ```
 
-### Avvio Simulatori
+   **Nota**: Per fermare i simulatori, premi `CTRL+C`. Lo script terminerà automaticamente tutti i container.
 
-Una volta che lo stack è pronto, avvia i simulatori:
-
-```bash
-./run_simulation.sh -c simulator/config.json
-```
-
-Questo script legge la configurazione dal file JSON e avvia un container per ogni stazione definita.
-
-Per fermare i simulatori, premi `CTRL+C`. Lo script terminerà automaticamente tutti i container.
-
-### Scalare il Cluster Hadoop (Opzionale)
-
-Per aumentare la capacità del cluster Hadoop, aggiungi più nodi durante l'avvio:
-
-```bash
-docker compose up -d --build --scale hdfs-datanode=2 --scale yarn-nodemanager=2
-```
-
----
-
-### Avvio Manuale dei Simulatori (senza jq)
+### Manuale (senza jq)
 
 Se non hai `jq` installato (scaricalo, è utile!), puoi avviare i simulatori manualmente:
 
-1. **Builda l'immagine del simulatore:**
+1. Builda l'immagine del simulatore:
    ```bash
    docker build -t masd-simulator:latest ./simulator
    ```
-
-2. **Carica le variabili d'ambiente:**
+2. Carica le variabili d'ambiente:
    ```bash
    source .env
    ```
-
-3. **Avvia ogni stazione manualmente:**
+3. Avvia ogni stazione manualmente:
    ```bash
    docker run -d \
      --name "simulator-<station_id>" \
@@ -91,8 +91,7 @@ Se non hai `jq` installato (scaricalo, è utile!), puoi avviare i simulatori man
      -e KAFKA_TOPIC_PREFIX="$KAFKA_TOPIC_PREFIX" \
      masd-simulator:latest
    ```
-   
-   Sostituisci i valori tra `<>` con i parametri desiderati per la stazione (vedi `simulator/config.json`).
+    Sostituisci i valori tra `<>` con i parametri desiderati per la stazione (vedi `simulator/config.json`).
 
 ## Configurazione Simulatori
 
