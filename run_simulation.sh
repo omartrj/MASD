@@ -40,7 +40,7 @@ echo ""
 
 # === BUILD IMMAGINE ===
 echo "Build immagine simulator..."
-docker build -q -t masd-simulator:latest ./simulator
+docker build -t masd-simulator:latest ./simulator
 
 # === AVVIA SIMULATORI ===
 NETWORK="masd-network"
