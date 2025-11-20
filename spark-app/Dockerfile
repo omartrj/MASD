@@ -1,4 +1,4 @@
-FROM spark:4.0.1-python3
+FROM spark:3.5.7-scala2.12-java11-python3-ubuntu
 
 # Utente root per installare pacchetti
 USER root
@@ -20,5 +20,5 @@ USER spark
 # Usa il file pi.py come test (|| true per evitare errori)
 RUN /opt/spark/bin/spark-submit \
     --conf "spark.driver.extraJavaOptions=-Divy.home=/opt/spark/.ivy2 -Djava.io.tmpdir=/opt/spark/tmp" \
-    --packages org.apache.spark:spark-sql-kafka-0-10_2.13:4.0.1,org.mongodb.spark:mongo-spark-connector_2.13:10.5.0 \
+    --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.7,org.mongodb.spark:mongo-spark-connector_2.12:10.5.0 \
     /opt/spark/examples/src/main/python/pi.py 2>&1 || true

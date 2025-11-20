@@ -2,13 +2,13 @@
 
 Progetto per l'esame di **Data Intensive Application & Big Data**, Università degli Studi di Perugia.
 
-Pipeline di streaming data che simula sensori IoT, invia i dati a Kafka, li processa con Spark ed infine li salva su MongoDB. Ambiente completamente containerizzato con Docker Compose.
+Pipeline di streaming data che simula sensori IoT, invia i dati a Kafka, li processa con Spark su un cluster Hadoop ed infine li salva su MongoDB. Ambiente completamente containerizzato con Docker Compose.
 
 ## Architettura
 
 - **Simulatore**: producer Python che genera dati sensori e li pubblica su Kafka
 - **Kafka + ZooKeeper**: message broker per lo streaming dei dati
-- **Spark**: consumer che aggrega i dati in real-time (attualmente in modalità local)
+- **Spark**: consumer che aggrega i dati in real-time su un cluster Hadoop
 - **MongoDB**: database per la persistenza dei risultati
 - **Hadoop (HDFS + YARN)**: cluster per l'esecuzione distribuita
 
@@ -106,7 +106,3 @@ docker compose down -v
 # (Se sono state avviate le UI web)
 docker compose --profile kafka-ui --profile mongo-ui down -v
 ```
-
-## Sviluppi Futuri
-
-- **Spark su YARN**: migrare l'esecuzione di Spark da `--master local[*]` a `--master yarn` per sfruttare il cluster Hadoop distribuito già presente nel docker-compose

@@ -3,12 +3,10 @@ services:
   # === SPARK APPLICATION ===
   spark-app:
     build:
-      context: ./spark-app
+      context: ./../spark-app
       dockerfile: Dockerfile
     container_name: spark-app
     hostname: spark-app
-    ports:
-      - 4040:4040
     depends_on:
       yarn-resourcemanager:
         condition: service_started
@@ -50,10 +48,10 @@ services:
       - hadoop-config:${HADOOP_HOME}/etc/hadoop # <-- Usa i file di configurazione generati dai container hadoop
     command: >
       /opt/spark/bin/spark-submit
-      --master local[*]
+      --master yarn
       --deploy-mode client
       --conf "spark.driver.extraJavaOptions=-Divy.home=/opt/spark/.ivy2 -Djava.io.tmpdir=/opt/spark/tmp"
-      --packages org.apache.spark:spark-sql-kafka-0-10_2.13:4.0.1,org.mongodb.spark:mongo-spark-connector_2.13:10.5.0
+      --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.7,org.mongodb.spark:mongo-spark-connector_2.12:10.5.0
       /opt/spark/work-dir/consumer.py
     healthcheck:
       test: ["CMD", "test", "-f", "/tmp/spark-ready"]
