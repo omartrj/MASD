@@ -1,84 +1,76 @@
-# MASD — Monitoring & Analytics of Streaming Data
+# 📊 MASD — Monitoring & Analytics of Streaming Data
 
 ![Apache Spark](https://img.shields.io/badge/Apache%20Spark-E35A16?style=flat&logo=apachespark&logoColor=white) ![Apache Hadoop](https://img.shields.io/badge/Apache%20Hadoop-66CCFF?style=flat&logo=apachehadoop&logoColor=black) ![Apache Kafka](https://img.shields.io/badge/Apache%20Kafka-000000?style=flat&logo=apachekafka&logoColor=white) ![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=flat&logo=mongodb&logoColor=white)
 
-Progetto per l'esame di **Data Intensive Application & Big Data**, Università degli Studi di Perugia.
+Project for the **Data Intensive Application & Big Data** exam, University of Perugia.
 
-Pipeline di streaming data che simula sensori IoT, invia i dati a Kafka, li processa con Spark su un cluster Hadoop ed infine li salva su MongoDB. Ambiente completamente containerizzato con Docker Compose.
+A data streaming pipeline that simulates IoT sensors, sends data to Kafka, processes it with Spark on a Hadoop cluster, and finally saves it to MongoDB. The entire environment is containerized with Docker Compose.
 
-**Autore**: Omar Criacci (omar.criacci@student.unipg.it)  
-**Versione**: 1.0.0
+**Author**: Omar Criacci (omar.criacci@student.unipg.it)  
+**Version**: 1.0.0
 
-## Indice
-- [Architettura](#architettura)
-- [Prerequisiti](#prerequisiti)
-- [Quick Start](#quickstart)
-    - [Automatico (Consigliato)](#automatico-consigliato)
-    - [Manuale](#avvio-manuale)
-- [Configurazione Simulatori](#configurazione-simulatori)
-- [Struttura](#struttura)
-- [Comandi Utili](#comandi-utili)
+## 📋 Table of Contents
 
-## Architettura
+- [Prerequisites](#-prerequisites)
+- [Quick Start](#-quickstart)
+    - [Automatic (Recommended)](#automatic-recommended)
+    - [Manual Startup (without jq)](#manual-startup-without-jq)
+- [Simulator Configuration](#️-simulator-configuration)
+- [Architecture](#-architecture)
+- [Structure](#-structure)
+- [Useful Commands](#-useful-commands)
 
-La pipeline si compone di diversi componenti:
-- **Simulatore**: producer Python che genera dati sensori e li pubblica su Kafka
-- **Kafka + ZooKeeper**: message broker per lo streaming dei dati
-- **Spark**: consumer che aggrega i dati in real-time su un cluster Hadoop
-- **MongoDB**: database per la persistenza dei risultati
-- **Hadoop (HDFS + YARN)**: cluster per l'esecuzione distribuita
+## ✅ Prerequisites
 
-## Prerequisiti
+- Docker and Docker Compose
+- jq (optional, for the simulation script)
+- At least 8 GB of RAM
 
-- Docker e Docker Compose
-- jq (opzionale, per lo script di simulazione)
-- Almeno 8 GB di RAM
+## 🚀 Quickstart
 
-## Quickstart
+### Automatic (Recommended)
 
-### Automatico (Consigliato)
-
-1. Clona il repository:
+1. Clone the repository:
    ```bash
    git clone https://github.com/omarcriacci/MASD.git
    cd MASD
    ```
 
-2. Avvia l'intero stack (Kafka, MongoDB, Hadoop, Spark):
+2. Start the entire stack (Kafka, MongoDB, Hadoop, Spark):
    ```bash
    docker compose up -d --build
    ```
 
-   Per avviare anche le interfacce web per Kafka e MongoDB (opzionali):
+   To also start the web UIs for Kafka and MongoDB (optional):
    ```bash
    docker compose --profile web-ui up -d --build
    ```
 
-   Inoltre è possibile scalare il cluster Hadoop aggiungendo nodi (opzionale):
+   You can also scale the Hadoop cluster by adding more nodes (optional):
    ```bash
    docker compose up -d --build --scale hdfs-datanode=2 --scale yarn-nodemanager=2
    ```
 
-3. Avvia i simulatori:
+3. Start the simulators:
    ```bash
    ./run_simulation.sh -c simulator/config.json
    ```
 
-   **Nota**: Per fermare i simulatori, premi `CTRL+C`. Lo script terminerà automaticamente tutti i container.
+   **Note**: To stop the simulators, press `CTRL+C`. The script will automatically terminate all simulator containers.
 
-### Manuale (senza jq)
+### Manual Startup (without jq)
 
-Se non hai `jq` installato (scaricalo, è utile!), puoi avviare i simulatori manualmente:
+If you don't have `jq` installed (you should get it, it's useful!), you can start the simulators manually:
 
-1. Builda l'immagine del simulatore:
+1. Build the simulator image:
    ```bash
    docker build -t masd-simulator:latest ./simulator
    ```
-2. Carica le variabili d'ambiente:
+2. Load the environment variables:
    ```bash
    source .env
    ```
-3. Avvia ogni stazione manualmente:
+3. Start each station manually:
    ```bash
    docker run -d \
      --name "simulator-<station_id>" \
@@ -93,51 +85,74 @@ Se non hai `jq` installato (scaricalo, è utile!), puoi avviare i simulatori man
      -e KAFKA_TOPIC_PREFIX="$KAFKA_TOPIC_PREFIX" \
      masd-simulator:latest
    ```
-    Sostituisci i valori tra `<>` con i parametri desiderati per la stazione (vedi `simulator/config.json`).
+    Replace the values between `<>` with the desired parameters for the station (see `simulator/config.json`).
 
-## Configurazione Simulatori
+## ⚙️ Simulator Configuration
 
-I simulatori sono configurati tramite il file `simulator/config.json`:
+The simulators are configured via the `simulator/config.json` file:
 
 ```jsonc
 {
     "sensors": {
         "send_interval": {
-            "mean_ms": 250,        // Intervallo medio di invio in millisecondi
-            "stddev_pct": 0.2      // Deviazione standard (20%)
+            "mean_ms": 250,        // Average send interval in milliseconds
+            "stddev_pct": 0.2      // Standard deviation (20%)
         },
-        "malformation_pct": 0.05   // Percentuale di dati malformati (5%)
+        "malformation_pct": 0.05   // Percentage of malformed data (5%)
     },
     "stations": [
         {
-            "name": "Perugia",     // Nome stazione
-            "id": "perugia",       // ID univoco (usato per topic Kafka e collezione MongoDB)
-            "num_sensors": 3       // Numero di sensori per questa stazione
+            "name": "Perugia",     // Station name
+            "id": "perugia",       // Unique ID (used for Kafka topic and MongoDB collection)
+            "num_sensors": 3       // Number of sensors for this station
         },
-        // ... altre stazioni
+        // ... other stations
     ]
 }
 ```
 
-Ogni stazione viene avviata come container Docker separato e pubblica su un topic Kafka dedicato: `sensors.raw.<station_id>`.
+Each station is started as a separate Docker container and publishes to a dedicated Kafka topic: `sensors.raw.<station_id>`.
 
-## Struttura
+## 🏗️ Architecture
+
+The pipeline consists of several components orchestrated by Docker Compose to create a complete data streaming and processing environment.
+
+-   **🤖 Simulator**: A Python-based producer that simulates multiple IoT sensors from different stations. It generates sensor data with configurable intervals and error rates, then publishes these messages to specific Kafka topics. Each station runs in its own Docker container, allowing for parallel and isolated data generation.
+
+-   **📬 Kafka + ZooKeeper**: The core of the data ingestion layer.
+    -   **Kafka** acts as a distributed message broker, receiving streams of sensor data from the simulators. It provides a scalable and fault-tolerant way to handle high-throughput data streams.
+    -   **ZooKeeper** is used by Kafka for cluster coordination, managing broker metadata, and maintaining consumer state.
+
+-   **✨ Spark**: A powerful data processing engine that consumes data from Kafka in real-time. The Spark application runs on a Hadoop YARN cluster and performs the following tasks:
+    1.  **Reads data streams** from Kafka topics.
+    2.  **Validates and cleans** the incoming JSON data, filtering out malformed records.
+    3.  **Parses the data** and applies a schema to structure it.
+    4.  **Performs real-time aggregations** to calculate statistics like average, standard deviation, minimum, and maximum sensor values for each station.
+    5.  **Writes the aggregated results** to MongoDB for persistence and further analysis.
+
+-   **💾 MongoDB**: A NoSQL database used to store the aggregated results from the Spark processing job. It is configured as a replica set to ensure high availability and data redundancy. The results are stored in collections named after each station's ID.
+
+-   **🐘 Hadoop (HDFS + YARN)**: Provides the distributed computing backbone for Spark.
+    -   **HDFS (Hadoop Distributed File System)** offers distributed storage, although it's primarily used by YARN and Spark for job coordination and shuffling data between stages, not for final data persistence in this project.
+    -   **YARN (Yet Another Resource Negotiator)** is the cluster resource manager, responsible for scheduling and managing the distributed execution of the Spark application across multiple nodes.
+
+## 📂 Structure
 
 ```text
 .
-├── .env                        # Variabili d'ambiente
-├── docker-compose.yml          # Orchestrazione principale
+├── .env                        # Environment variables
+├── docker-compose.yml          # Main orchestration file
 ├── compose/                    
-│   ├── kafka.yml               # Cluster Kafka (Zookeeper, 3 brokers, UI)
-│   ├── mongodb.yml             # Replica Set MongoDB (3 nodi, UI)
-│   ├── hadoop.yml              # Cluster Hadoop (HDFS + YARN)
-│   └── spark.yml               # Applicazione Spark
-├── hadoop.config               # Configurazione Hadoop
-├── run_simulation.sh           # Script per avviare i simulatori
+│   ├── kafka.yml               # Kafka Cluster (Zookeeper, 3 brokers, UI)
+│   ├── mongodb.yml             # MongoDB Replica Set (3 nodes, UI)
+│   ├── hadoop.yml              # Hadoop Cluster (HDFS + YARN)
+│   └── spark.yml               # Spark Application
+├── hadoop.config               # Hadoop configuration
+├── run_simulation.sh           # Script to start simulators
 ├── README.md                   
-├── simulator/                  # Simulatore (Producer)
+├── simulator/                  # Simulator (Producer)
 │   ├── producer.py
-│   ├── config.json             # Configurazione simulazione   
+│   ├── config.json             # Simulation configuration   
 │   ├── requirements.txt
 │   └── Dockerfile
 └── spark-app/                  # Spark Application (Consumer)
@@ -146,18 +161,18 @@ Ogni stazione viene avviata come container Docker separato e pubblica su un topi
     └── Dockerfile
 ```
 
-## Comandi Utili
+## 💡 Useful Commands
 
 ```bash
-# Visualizzare log
+# View logs
 docker logs -f container_id
 
-# Fermare tutto
+# Stop everything
 docker compose down
 
-# Rimuovere anche i volumi
+# Stop and remove volumes
 docker compose down -v
 
-# (Se sono state avviate le UI web)
+# (If web UIs were started)
 docker compose --profile web-ui down -v
 ```
