@@ -22,11 +22,7 @@ SIM_INTERVAL_MEAN_MS = int(os.getenv("SIM_INTERVAL_MEAN_MS"))
 SIM_INTERVAL_STDDEV_PCT = float(os.getenv("SIM_INTERVAL_STDDEV_PCT"))
 SIM_MALFORMED_PCT = float(os.getenv("SIM_MALFORMED_PCT"))
 
-
 SIM_INTERVAL_STD_DEV = SIM_INTERVAL_MEAN_MS * SIM_INTERVAL_STDDEV_PCT
-
-# Prendi l'ID della stazione dal nome host del container
-#STATION_ID = os.getenv("HOSTNAME")
 TOPIC = f"{KAFKA_TOPIC_PREFIX}.{SIM_STATION_ID}"
 
 
