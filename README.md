@@ -26,6 +26,11 @@ Pipeline di streaming data che simula sensori IoT, invia i dati a Kafka, li proc
 docker compose up -d --build
 ```
 
+> **Tip**: Per scalare il cluster Hadoop, aggiungi `--scale`:
+> ```bash
+> docker compose up -d --build --scale hdfs-datanode=2 --scale yarn-nodemanager=2
+> ```
+
 2. (Opzionale) Avvia le UI web:
 
 ```bash
