@@ -1,3 +1,4 @@
+# Immagine spark compatibilile con la versione di java nel cluster hadoop
 FROM spark:3.5.7-scala2.12-java11-python3-ubuntu
 
 # Utente root per installare pacchetti
