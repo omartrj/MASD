@@ -52,10 +52,10 @@ Premi `CTRL+C` per fermare i simulatori.
 >   -e PROJECT_GITHUB="$GITHUB_REPO" \
 >   -e SIM_STATION_NAME="<station_name>" \
 >   -e SIM_STATION_ID="<station_id>" \
->   -e SIM_NUM_SENSORS=<num_sensors> \
->   -e SIM_INTERVAL_MEAN_MS=<mean_ms> \
->   -e SIM_INTERVAL_STDDEV_PCT=<stddev_pct> \
->   -e SIM_MALFORMED_PCT=<malformation_pct> \
+>   -e SIM_NUM_SENSORS="<num_sensors>" \
+>   -e SIM_INTERVAL_MEAN_MS="<mean_ms>" \
+>   -e SIM_INTERVAL_STDDEV_PCT="<stddev_pct>" \
+>   -e SIM_MALFORMED_PCT="<malformation_pct>" \
 >   -e KAFKA_BOOTSTRAP_SERVERS="$KAFKA_BOOTSTRAP_SERVERS" \
 >   -e KAFKA_TOPIC_PREFIX="$KAFKA_TOPIC_PREFIX" \
 >   masd-simulator:latest
