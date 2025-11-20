@@ -8,13 +8,14 @@ from pyspark.sql.types import ( # pyright: ignore[reportMissingImports]
     StructType, StructField, StringType, LongType, DoubleType
 )
 
-# === VARIABILI D'AMBIENTE ===
-PROJECT_NAME = os.getenv("PROJECT_NAME")
-PROJECT_VERSION = os.getenv("PROJECT_VERSION")
-PROJECT_AUTHOR = os.getenv("PROJECT_AUTHOR")
-PROJECT_EMAIL = os.getenv("PROJECT_EMAIL")
-PROJECT_GITHUB = os.getenv("PROJECT_GITHUB")
+# === METADATA PROGETTO ===
+PROJECT_NAME = "MASD"
+PROJECT_VERSION = "1.0.0"
+PROJECT_AUTHOR = "Omar Criacci"
+PROJECT_EMAIL = "omar.criacci@student.unipg.it"
+PROJECT_GITHUB = "https://github.com/omartrj/MASD"
 
+# === VARIABILI D'AMBIENTE ===
 KAFKA_BOOTSTRAP_SERVERS = os.getenv("KAFKA_BOOTSTRAP_SERVERS")
 KAFKA_TOPIC_PREFIX = os.getenv("KAFKA_TOPIC_PREFIX")
 MONGO_URI = os.getenv("MONGO_URI")

@@ -70,11 +70,6 @@ for i in $(seq 0 $((STATION_COUNT - 1))); do
     CONTAINER_ID=$(docker run -d \
         --name "simulator-${ID}" \
         --network "$NETWORK" \
-        -e PROJECT_NAME="$PROJECT_NAME" \
-        -e PROJECT_VERSION="$VERSION" \
-        -e PROJECT_AUTHOR="$AUTHOR" \
-        -e PROJECT_EMAIL="$EMAIL" \
-        -e PROJECT_GITHUB="$GITHUB_REPO" \
         -e SIM_STATION_NAME="$NAME" \
         -e SIM_STATION_ID="$ID" \
         -e SIM_NUM_SENSORS="$NUM_SENSORS" \

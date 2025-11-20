@@ -45,11 +45,6 @@ Premi `CTRL+C` per fermare i simulatori.
 > docker run -d \
 >   --name "simulator-<station_id>" \
 >   --network "masd-network" \
->   -e PROJECT_NAME="$PROJECT_NAME" \
->   -e PROJECT_VERSION="$VERSION" \
->   -e PROJECT_AUTHOR="$AUTHOR" \
->   -e PROJECT_EMAIL="$EMAIL" \
->   -e PROJECT_GITHUB="$GITHUB_REPO" \
 >   -e SIM_STATION_NAME="<station_name>" \
 >   -e SIM_STATION_ID="<station_id>" \
 >   -e SIM_NUM_SENSORS="<num_sensors>" \
