@@ -108,10 +108,3 @@ while true; do
         fi
     done
 done
-            log_error "Container $CONTAINER_NAME è terminato inaspettatamente"
-            log_info "Log del container:"
-            docker logs --tail 50 "$container_id"
-            cleanup
-        fi
-    done
-done
