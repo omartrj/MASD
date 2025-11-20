@@ -1,4 +1,4 @@
-# 🏗️ Architecture
+# Architecture
 
 The pipeline consists of several components orchestrated by Docker Compose to create a complete data streaming and processing environment.
 
