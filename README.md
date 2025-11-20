@@ -1,6 +1,6 @@
-# 📊 MASD — Monitoring & Analytics of Streaming Data
+# MASD — Monitoring & Analytics of Streaming Data
 
-![Apache Spark](https://img.shields.io/badge/Apache%20Spark-E35A16?style=flat&logo=apachespark&logoColor=white) ![Apache Hadoop](https://img.shields.io/badge/Apache%20Hadoop-66CCFF?style=flat&logo=apachehadoop&logoColor=black) ![Apache Kafka](https://img.shields.io/badge/Apache%20Kafka-000000?style=flat&logo=apachekafka&logoColor=white) ![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=flat&logo=mongodb&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white) ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white) ![Apache Spark](https://img.shields.io/badge/Apache%20Spark-E35A16?style=flat&logo=apachespark&logoColor=white) ![Apache Hadoop](https://img.shields.io/badge/Apache%20Hadoop-66CCFF?style=flat&logo=apachehadoop&logoColor=black) ![Apache Kafka](https://img.shields.io/badge/Apache%20Kafka-000000?style=flat&logo=apachekafka&logoColor=white) ![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=flat&logo=mongodb&logoColor=white)
 
 Project for the **Data Intensive Application & Big Data** exam, University of Perugia.
 
@@ -15,6 +15,7 @@ A data streaming pipeline that simulates IoT sensors, sends data to Kafka, proce
 - [Quick Start](#-quickstart)
     - [Automatic (Recommended)](#automatic-recommended)
     - [Manual Startup (without jq)](#manual-startup-without-jq)
+- [Web Interfaces](#-web-interfaces)
 - [Simulator Configuration](#️-simulator-configuration)
 - [Architecture](#-architecture)
 - [Structure](#-structure)
@@ -24,7 +25,7 @@ A data streaming pipeline that simulates IoT sensors, sends data to Kafka, proce
 
 - Docker and Docker Compose
 - jq (optional, for the simulation script)
-- At least 8 GB of RAM
+- At least 8 GB of RAM - *but more is better*
 
 ## 🚀 Quickstart
 
@@ -60,7 +61,7 @@ A data streaming pipeline that simulates IoT sensors, sends data to Kafka, proce
 
 ### Manual Startup (without jq)
 
-If you don't have `jq` installed (you should get it, it's useful!), you can start the simulators manually:
+If you don't have `jq` installed (*you should get it, it's useful!*), you can start the simulators manually:
 
 1. Build the simulator image:
    ```bash
@@ -81,11 +82,23 @@ If you don't have `jq` installed (you should get it, it's useful!), you can star
      -e SIM_INTERVAL_MEAN_MS="<mean_ms>" \
      -e SIM_INTERVAL_STDDEV_PCT="<stddev_pct>" \
      -e SIM_MALFORMED_PCT="<malformation_pct>" \
-     -e KAFKA_BOOTSTRAP_SERVERS="$KAFKA_BOOTSTRAP_SERVERS" \
-     -e KAFKA_TOPIC_PREFIX="$KAFKA_TOPIC_PREFIX" \
+     -e KAFKA_BOOTSTRAP_SERVERS=$KAFKA_BOOTSTRAP_SERVERS \
+     -e KAFKA_TOPIC_PREFIX=$KAFKA_TOPIC_PREFIX \
      masd-simulator:latest
    ```
-    Replace the values between `<>` with the desired parameters for the station (see `simulator/config.json`).
+    Replace the values between `<>` with the desired parameters for the station (see [Simulator Configuration](#️-simulator-configuration) for details).
+
+## 🌐 Web Interfaces
+
+Monitor the pipeline using these dashboards (if everything started correctly 🤞).
+
+**Standard:**
+-   **Hadoop NameNode** on [localhost:9870](http://localhost:9870): HDFS status and file browser.
+-   **YARN ResourceManager** on [localhost:8088](http://localhost:8088): Cluster resources and Spark job status.
+
+**Optional** (requires `--profile web-ui`):
+-   **Kafka UI** on [localhost:8080](http://localhost:8080) (by [Provectus](https://github.com/provectus/kafka-ui)): Manage topics, view messages, and monitor consumers.
+-   **Mongo Express** on [localhost:8081](http://localhost:8081) (by [mongo-express](https://github.com/mongo-express/mongo-express)): Admin interface for MongoDB collections.
 
 ## ⚙️ Simulator Configuration
 
@@ -117,24 +130,13 @@ Each station is started as a separate Docker container and publishes to a dedica
 
 The pipeline consists of several components orchestrated by Docker Compose to create a complete data streaming and processing environment.
 
--   **🤖 Simulator**: A Python-based producer that simulates multiple IoT sensors from different stations. It generates sensor data with configurable intervals and error rates, then publishes these messages to specific Kafka topics. Each station runs in its own Docker container, allowing for parallel and isolated data generation.
+-   **🤖 Simulator**: Python-based producer simulating IoT sensors.
+-   **📬 Kafka + ZooKeeper**: Distributed message broker for data ingestion.
+-   **✨ Spark**: Real-time data processing engine running on YARN.
+-   **💾 MongoDB**: NoSQL database for storing aggregated results.
+-   **🐘 Hadoop (HDFS + YARN)**: Distributed storage and resource management.
 
--   **📬 Kafka + ZooKeeper**: The core of the data ingestion layer.
-    -   **Kafka** acts as a distributed message broker, receiving streams of sensor data from the simulators. It provides a scalable and fault-tolerant way to handle high-throughput data streams.
-    -   **ZooKeeper** is used by Kafka for cluster coordination, managing broker metadata, and maintaining consumer state.
-
--   **✨ Spark**: A powerful data processing engine that consumes data from Kafka in real-time. The Spark application runs on a Hadoop YARN cluster and performs the following tasks:
-    1.  **Reads data streams** from Kafka topics.
-    2.  **Validates and cleans** the incoming JSON data, filtering out malformed records.
-    3.  **Parses the data** and applies a schema to structure it.
-    4.  **Performs real-time aggregations** to calculate statistics like average, standard deviation, minimum, and maximum sensor values for each station.
-    5.  **Writes the aggregated results** to MongoDB for persistence and further analysis.
-
--   **💾 MongoDB**: A NoSQL database used to store the aggregated results from the Spark processing job. It is configured as a replica set to ensure high availability and data redundancy. The results are stored in collections named after each station's ID.
-
--   **🐘 Hadoop (HDFS + YARN)**: Provides the distributed computing backbone for Spark.
-    -   **HDFS (Hadoop Distributed File System)** offers distributed storage, although it's primarily used by YARN and Spark for job coordination and shuffling data between stages, not for final data persistence in this project.
-    -   **YARN (Yet Another Resource Negotiator)** is the cluster resource manager, responsible for scheduling and managing the distributed execution of the Spark application across multiple nodes.
+For a detailed explanation of the architecture and configuration of each component, please refer to the [Architecture Documentation](docs/architecture.md).
 
 ## 📂 Structure
 
