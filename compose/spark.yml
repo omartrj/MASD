@@ -27,8 +27,8 @@ services:
       mongodb-init:
         condition: service_completed_successfully
     environment:
-      - HADOOP_CONF_DIR=/opt/hadoop/etc/hadoop
-      - YARN_CONF_DIR=/opt/hadoop/etc/hadoop
+      - HADOOP_CONF_DIR=${HADOOP_HOME}/etc/hadoop
+      - YARN_CONF_DIR=${HADOOP_HOME}/etc/hadoop
       - HADOOP_USER_NAME=hadoop
       - PROJECT_NAME=${PROJECT_NAME}
       - PROJECT_VERSION=${VERSION}
@@ -47,7 +47,7 @@ services:
       - SPARK_AGGREGATE_WATERMARK=${SPARK_AGGREGATE_WATERMARK}
       - SPARK_AGGREGATE_CHECKPOINT_DIR=${SPARK_AGGREGATE_CHECKPOINT_DIR}
     volumes:
-      - hadoop-config:/opt/hadoop/etc/hadoop # <-- Usa i file di configurazione generati dai container hadoop
+      - hadoop-config:${HADOOP_HOME}/etc/hadoop # <-- Usa i file di configurazione generati dai container hadoop
     command: >
       /opt/spark/bin/spark-submit
       --master local[*]
