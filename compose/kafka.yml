@@ -95,7 +95,7 @@ services:
     image: provectuslabs/kafka-ui:latest
     container_name: web-ui
     profiles:
-      - kafka-ui
+      - web-ui
     depends_on:
       kafka1:
         condition: service_healthy
