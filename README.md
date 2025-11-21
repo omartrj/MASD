@@ -33,22 +33,19 @@ A data streaming pipeline that simulates IoT sensors, sends data to Kafka, proce
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/omarcriacci/MASD.git
+   git clone https://github.com/omartrj/MASD.git
    cd MASD
    ```
 
 2. Start the entire stack (Kafka, MongoDB, Hadoop, Spark):
    ```bash
+   # Minimal setup
    docker compose up -d --build
-   ```
-
-   To also start the web UIs for Kafka and MongoDB (optional):
-   ```bash
+   
+   # To also start the web UIs for Kafka and MongoDB (optional):
    docker compose --profile web-ui up -d --build
-   ```
-
-   You can also scale the Hadoop cluster by adding more nodes (optional):
-   ```bash
+   
+   # To scale the Hadoop cluster (optional):
    docker compose up -d --build --scale hdfs-datanode=2 --scale yarn-nodemanager=2
    ```
 
@@ -86,7 +83,7 @@ If you don't have `jq` installed (*you should get it, it's useful!*), you can st
      -e KAFKA_TOPIC_PREFIX=$KAFKA_TOPIC_PREFIX \
      masd-simulator:latest
    ```
-    Replace the values between `<>` with the desired parameters for the station (see [Simulator Configuration](#️-simulator-configuration) for details).
+    Replace the values between `<>` with the desired parameters for the station (see [simulator configuration](#️-simulator-configuration) for details).
 
 ## 🌐 Web Interfaces
 
@@ -109,7 +106,7 @@ The simulators are configured via the `simulator/config.json` file:
     "sensors": {
         "send_interval": {
             "mean_ms": 250,        // Average send interval in milliseconds
-            "stddev_pct": 0.2      // Standard deviation (20%)
+            "stddev_pct": 0.2      // Standard deviation of send interval (20%)
         },
         "malformation_pct": 0.05   // Percentage of malformed data (5%)
     },
@@ -136,7 +133,7 @@ The pipeline consists of several components orchestrated by Docker Compose to cr
 -   **💾 MongoDB**: NoSQL database for storing aggregated results.
 -   **🐘 Hadoop (HDFS + YARN)**: Distributed storage and resource management.
 
-For a detailed explanation of the architecture and configuration of each component, please refer to the [Architecture Documentation](docs/architecture.md).
+For a detailed explanation of the architecture and configuration of each component, please refer to the [architecture documentation](docs/architecture.md).
 
 ## 📂 Structure
 
