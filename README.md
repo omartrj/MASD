@@ -154,6 +154,10 @@ For a detailed explanation of the architecture and configuration of each compone
 │   ├── mongodb.yml             # MongoDB Replica Set (3 nodes, UI)
 │   ├── hadoop.yml              # Hadoop Cluster (HDFS + YARN)
 │   └── spark.yml               # Spark Application
+├── docs/                       # Documentation
+│   ├── architecture.md         
+│   ├── usage.md                
+│   └── assets/                 
 ├── hadoop.config               # Hadoop configuration
 ├── run_simulation.sh           # Script to start simulators
 ├── README.md                   
