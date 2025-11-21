@@ -90,15 +90,8 @@ To verify that data is being published correctly, you can use either the command
 
 The **Spark Application** (`spark-app/consumer.py`) consumes data from Kafka, validates it, and performs windowed aggregations.
 
-### Logic
-1.  **Ingest**: Reads from all `sensors.raw.*` topics.
-2.  **Parse & Validate**: Converts JSON to a structured schema. Infers validity by checking if `value` is numeric.
-3.  **Aggregate**: Groups data into **1-minute tumbling windows**.
-    -   Calculates: `min_val`, `max_val`, `avg_val`, `total_count`, and `malformed_count`.
+### Check Logs
 
-### Verification
-
-**Check Logs**
 View the logs of the Spark application to see batch processing status:
 ```bash
 docker logs -f spark-app
@@ -109,7 +102,8 @@ docker logs -f spark-app
 
 ![Screenshot: Spark App Logs](./assets/spark-cli.png)
 
-**YARN ResourceManager**
+### YARN ResourceManager
+
 Open [http://localhost:8088](http://localhost:8088) to see the running Spark application (`MASD - Spark Consumer`) and its resource usage.
 
 ![Screenshot: YARN ResourceManager](./assets/spark-ui.png)
