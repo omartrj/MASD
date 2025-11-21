@@ -1,12 +1,18 @@
 # Usage Flow
 
 This document describes the end-to-end flow of data in the MASD pipeline, from generation to storage, including how to verify each step.
+For this particular example, i ran the stack with both the Kafka and MongoDB web UIs enabled, and with a Hadoop cluster scaled to 2 datanodes and 2 nodemanagers:
 
-## 1. 📡 Data Generation (Simulator)
+```bash
+docker compose --profile web-ui up -d --build --scale hdfs-datanode=2 --scale yarn-nodemanager=2
+``` 
 
-The **Simulator** (`simulator/producer.py`) acts as an IoT gateway. It generates synthetic sensor data and publishes it to Kafka.
+Using the default simulator configuration in `simulator/config.json`, which defines 3 stations (`perugia`, `spoleto` and `foligno`).
 
-### Data Format
+## 1. Data Generation (Simulator)
+
+The **Simulator** (`simulator/producer.py`) acts as a generic sensors station. It generates synthetic data and publishes it to Kafka.
+
 The simulator generates JSON messages. The validity of the message is determined by the `value` field:
 
 **1. Valid Data**
@@ -33,9 +39,6 @@ The simulator generates JSON messages. The validity of the message is determined
 }
 ```
 
-### Configuration
-The simulation is controlled by `simulator/config.json`, where you can define stations, sensor counts, and generation intervals.
-
 ---
 
 ## 2. 📬 Ingestion (Kafka)
@@ -58,21 +61,19 @@ To verify that data is being published correctly, you can use either the command
     ```bash
     kafka-topics --bootstrap-server localhost:9092 --list
     ```
-    ![Screenshot: Kafka Topics List](placeholder_kafka_topics.png)
 
 3.  **Describe a specific topic:**
     Check partition count and replication details.
     ```bash
     kafka-topics --bootstrap-server localhost:9092 --describe --topic sensors.raw.perugia
     ```
-    ![Screenshot: Kafka Topic Describe](placeholder_kafka_describe.png)
 
 4.  **Consume messages:**
     Read the actual data flowing into the topic.
     ```bash
     kafka-console-consumer --bootstrap-server localhost:9092 --topic sensors.raw.perugia --from-beginning --max-messages 5
     ```
-    ![Screenshot: Kafka Console Consumer](placeholder_kafka_consumer.png)
+    ![Screenshot: Kafka Console Consumer](./assets/kafka-cli.png)
 
 **Option B: Kafka UI**
 
@@ -81,7 +82,7 @@ To verify that data is being published correctly, you can use either the command
 3.  Select a topic (e.g., `sensors.raw.perugia`).
 4.  Go to the **Messages** tab to see real-time data.
 
-![Screenshot: Kafka UI Messages](placeholder_kafka_ui.png)
+![Screenshot: Kafka UI Messages](./assets/kafka-ui.png)
 
 ---
 
@@ -102,14 +103,16 @@ View the logs of the Spark application to see batch processing status:
 ```bash
 docker logs -f spark-app
 ```
-*Look for messages like: `Batch 5 | perugia: 120 aggregati scritti`.*
+*Look for messages like: `Batch 2 | Scrittura completata per stazione: perugia`.*
 
-![Screenshot: Spark App Logs](placeholder_spark_logs.png)
+**Note:** It may take a few minutes for the first batches to be processed, depending on when the simulator started sending data, when the Spark app started consuming it, and the defined window aggregation parameters. With the current setup (250ms mean interval, 1-minute windows), you should start seeing output after about 1-2 minutes.
+
+![Screenshot: Spark App Logs](./assets/spark-cli.png)
 
 **YARN ResourceManager**
-Open [http://localhost:8088](http://localhost:8088) to see the running Spark application (`MASD`) and its resource usage.
+Open [http://localhost:8088](http://localhost:8088) to see the running Spark application (`MASD - Spark Consumer`) and its resource usage.
 
-![Screenshot: YARN ResourceManager](placeholder_yarn_ui.png)
+![Screenshot: YARN ResourceManager](./assets/spark-ui.png)
 
 ---
 
@@ -160,7 +163,6 @@ Use the MongoDB Shell (`mongosh`) to interactively explore the data.
     ```javascript
     show dbs
     ```
-    ![Screenshot: Mongo Show DBs](placeholder_mongo_dbs.png)
 
 3.  **Switch to the database:**
     ```javascript
@@ -172,14 +174,13 @@ Use the MongoDB Shell (`mongosh`) to interactively explore the data.
     ```javascript
     show collections
     ```
-    ![Screenshot: Mongo Show Collections](placeholder_mongo_collections.png)
 
 5.  **Query Aggregated Data:**
     Retrieve the most recent aggregations for a station.
     ```javascript
     db.station_perugia.find().sort({"window.start": -1}).limit(3)
     ```
-    ![Screenshot: Mongo Query Result](placeholder_mongo_query.png)
+    ![Screenshot: Mongo Query Result](./assets/mongo-cli.png)
 
 **Option B: Mongo Express**
 
@@ -187,4 +188,4 @@ Use the MongoDB Shell (`mongosh`) to interactively explore the data.
 2.  Click on the `masd_sensors` database.
 3.  Select a collection (e.g., `station_perugia`) to view the documents.
 
-![Screenshot: Mongo Express UI](placeholder_mongo_express.png)
+![Screenshot: Mongo Express UI](./assets/mongo-ui.png)
