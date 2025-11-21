@@ -10,7 +10,7 @@
         {
             "name": "Perugia",
             "id": "perugia",
-            "num_sensors": 3
+            "num_sensors": 15
         },
         {
             "name": "Foligno",
@@ -20,7 +20,7 @@
         {
             "name": "Spoleto",
             "id": "spoleto",
-            "num_sensors": 5
+            "num_sensors": 8
         }
     ]
 }
