@@ -109,17 +109,17 @@ async def sensor_task(sensor_id):
 # === MAIN ===
 async def main():
     print("="*70)
-    print(f"{Config.PROJECT_NAME} - Simulatore di Sensori")
-    print(f"  - Versione: {Config.PROJECT_VERSION}")
-    print(f"  - Autore: {Config.PROJECT_AUTHOR} ({Config.PROJECT_EMAIL})")
-    print(f"  - Repository: {Config.PROJECT_GITHUB}")
+    print(f"{Config.PROJECT_NAME} - Sensors Simulator")
+    print(f"  - version: {Config.PROJECT_VERSION}")
+    print(f"  - author: {Config.PROJECT_AUTHOR} ({Config.PROJECT_EMAIL})")
+    print(f"  - repository: {Config.PROJECT_GITHUB}")
     print("="*70)
-    print(f"AVVIO SIMULATORE STAZIONE - {Config.SIM_STATION_NAME} (ID: {Config.SIM_STATION_ID})")
-    print(f"  - # Sensori: {Config.SIM_NUM_SENSORS}")
-    print(f"  - Intervallo medio d'invio: {Config.SIM_INTERVAL_MEAN_MS}ms")
-    print(f"  - Deviazione standard intervallo: {Config.SIM_INTERVAL_STDDEV_PCT*100}%")
-    print(f"  - Pacchetti malformati: {Config.SIM_MALFORMED_PCT*100}%")
-    print(f"  - Invio pacchetti a {Config.KAFKA_BOOTSTRAP_SERVERS} | Topic: {Config.KAFKA_TOPIC}")
+    print(f"STARTING STATION SIMULATOR - {Config.SIM_STATION_NAME} (ID: {Config.SIM_STATION_ID})")
+    print(f"  - # sensors: {Config.SIM_NUM_SENSORS}")
+    print(f"  - average send interval: {Config.SIM_INTERVAL_MEAN_MS}ms")
+    print(f"  - interval standard deviation: {Config.SIM_INTERVAL_STDDEV_PCT*100}%")
+    print(f"  - malformed packets: {Config.SIM_MALFORMED_PCT*100}%")
+    print(f"  - sending packets to {Config.KAFKA_BOOTSTRAP_SERVERS} | topic: {Config.KAFKA_TOPIC}")
     print("="*70)
     
     # Avvia tutti i task dei sensori in parallelo

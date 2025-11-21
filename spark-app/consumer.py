@@ -68,15 +68,15 @@ def print_startup_banner():
     """Stampa le informazioni di avvio."""
     print("="*70)
     print(f"{Config.PROJECT_NAME} - Spark Consumer")
-    print(f"  - Versione: {Config.PROJECT_VERSION}")
-    print(f"  - Autore: {Config.PROJECT_AUTHOR} ({Config.PROJECT_EMAIL})")
-    print(f"  - Repository: {Config.PROJECT_GITHUB}")
+    print(f"  - version: {Config.PROJECT_VERSION}")
+    print(f"  - author: {Config.PROJECT_AUTHOR} ({Config.PROJECT_EMAIL})")
+    print(f"  - repository: {Config.PROJECT_GITHUB}")
     print("="*70)
-    print("CONFIGURAZIONE ATTIVA")
-    print(f"  - Kafka: {Config.KAFKA_BOOTSTRAP_SERVERS} (Topic: {Config.KAFKA_TOPIC_PREFIX}.*)")
-    print(f"  - MongoDB: {Config.MONGO_URI} ({Config.MONGO_DATABASE})")
-    print(f"  - Aggregation Window: {Config.WINDOW_DURATION} (Slide: {Config.SLIDE_DURATION})")
-    print(f"  - Watermark: {Config.WATERMARK_DELAY}")
+    print("ACTIVE CONFIGURATION")
+    print(f"  - kafka: {Config.KAFKA_BOOTSTRAP_SERVERS} (topic: {Config.KAFKA_TOPIC_PREFIX}.*)")
+    print(f"  - mongodb: {Config.MONGO_URI} ({Config.MONGO_DATABASE})")
+    print(f"  - aggregation window: {Config.WINDOW_DURATION} (slide: {Config.SLIDE_DURATION})")
+    print(f"  - watermark: {Config.WATERMARK_DELAY}")
     print("="*70)
 
 
