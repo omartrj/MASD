@@ -15,6 +15,7 @@ A data streaming pipeline that simulates IoT sensors, sends data to Kafka, proce
 - [Quick Start](#-quickstart)
     - [Automatic (Recommended)](#automatic-recommended)
     - [Manual Startup (without jq)](#manual-startup-without-jq)
+- [Usage Example](#-usage-example)
 - [Web Interfaces](#-web-interfaces)
 - [Simulator Configuration](#%EF%B8%8F-simulator-configuration)
 - [Architecture](#%EF%B8%8F-architecture)
@@ -87,6 +88,10 @@ If you don't have `jq` installed (*you should get it, it's useful!*), you can st
      masd-simulator:latest
    ```
     Replace the values between `<>` with the desired parameters for the station (see [simulator configuration](#%EF%B8%8F-simulator-configuration) for details).
+
+## 📖 Usage Example
+
+For a detailed step-by-step guide on how to verify the data flow (from generation to storage), check the [Usage Example](docs/usage.md).
 
 ## 🌐 Web Interfaces
 
