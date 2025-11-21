@@ -91,7 +91,7 @@ If you don't have `jq` installed (*you should get it, it's useful!*), you can st
 
 ## 📖 Usage Example
 
-For a detailed step-by-step guide on how to verify the data flow (from generation to storage), check the [Usage Example](docs/usage.md).
+For a detailed step-by-step guide on how to verify the data flow (from generation to storage), check the [usage example](docs/usage.md).
 
 ## 🌐 Web Interfaces
 
