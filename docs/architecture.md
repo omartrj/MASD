@@ -35,9 +35,9 @@ A powerful data processing engine that consumes data from Kafka in real-time. Th
 The application performs the following tasks:
 
 1.  **Reads data streams** from Kafka topics.
-2.  **Validates and cleans** the incoming JSON data, filtering out malformed records.
+2.  **Validates and cleans** the incoming JSON data.
 3.  **Parses the data** and applies a schema to structure it.
-4.  **Performs real-time aggregations** within the defined windows to calculate statistics like average, standard deviation, minimum, and maximum sensor values.
+4.  **Performs real-time aggregations** within the defined windows to calculate statistics like average, minimum, and maximum sensor values.
 5.  **Writes the aggregated results** to MongoDB for persistence and further analysis.
 
 ## 💾 MongoDB

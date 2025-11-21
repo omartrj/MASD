@@ -47,6 +47,9 @@ A data streaming pipeline that simulates IoT sensors, sends data to Kafka, proce
    
    # To scale the Hadoop cluster (optional):
    docker compose up -d --build --scale hdfs-datanode=2 --scale yarn-nodemanager=2
+
+   # Everything
+   docker compose --profile web-ui up -d --build --scale hdfs-datanode=2 --scale yarn-nodemanager=2
    ```
 
 3. Start the simulators:
