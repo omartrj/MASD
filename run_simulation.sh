@@ -51,6 +51,7 @@ cleanup() {
     echo -e "\nArresto simulatori..."
     for id in "${CONTAINER_IDS[@]}"; do
         docker stop "$id" > /dev/null 2>&1 && docker rm "$id" > /dev/null 2>&1
+        echo "✓ Arrestato container $id"
     done
     exit 0
 }
