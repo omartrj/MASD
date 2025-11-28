@@ -143,35 +143,6 @@ The pipeline consists of several components orchestrated by Docker Compose to cr
 
 For a detailed explanation of the architecture and configuration of each component, please refer to the [architecture documentation](docs/architecture.md).
 
-## 📂 Structure
-
-```text
-.
-├── .env                        # Environment variables
-├── docker-compose.yml          # Main orchestration file
-├── compose/                    
-│   ├── kafka.yml               # Kafka Cluster (Zookeeper, 3 brokers, UI)
-│   ├── mongodb.yml             # MongoDB Replica Set (3 nodes, UI)
-│   ├── hadoop.yml              # Hadoop Cluster (HDFS + YARN)
-│   └── spark.yml               # Spark Application
-├── docs/                       # Documentation
-│   ├── architecture.md         
-│   ├── usage.md                
-│   └── assets/                 
-├── hadoop.config               # Hadoop configuration
-├── run_simulation.sh           # Script to start simulators
-├── README.md                   
-├── simulator/                  # Simulator (Producer)
-│   ├── producer.py
-│   ├── config.json             # Simulation configuration   
-│   ├── requirements.txt
-│   └── Dockerfile
-└── spark-app/                  # Spark Application (Consumer)
-    ├── consumer.py
-    ├── requirements.txt
-    └── Dockerfile
-```
-
 ## 💡 Useful Commands
 
 ```bash
