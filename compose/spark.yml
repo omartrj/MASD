@@ -7,6 +7,8 @@ services:
       dockerfile: Dockerfile
     container_name: spark-app
     hostname: spark-app
+    ports:
+      - "4040:4040"  # Spark Web UI
     depends_on:
       yarn-resourcemanager:
         condition: service_started
