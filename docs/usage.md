@@ -41,7 +41,7 @@ The simulator generates JSON messages. The validity of the message is determined
 
 ---
 
-## 2. 📬 Ingestion (Kafka)
+## 2. Ingestion (Kafka)
 
 Data is published to Kafka topics named `sensors.raw.<station_id>` (e.g., `sensors.raw.perugia`).
 
@@ -86,7 +86,7 @@ To verify that data is being published correctly, you can use either the command
 
 ---
 
-## 3. ✨ Processing (Spark)
+## 3. Processing (Spark)
 
 The **Spark Application** (`spark-app/consumer.py`) consumes data from Kafka, validates it, and performs windowed aggregations.
 
@@ -110,7 +110,7 @@ Open [http://localhost:8088](http://localhost:8088) to see the running Spark app
 
 ---
 
-## 4. 💾 Storage (MongoDB)
+## 4. Storage (MongoDB)
 
 Aggregated results are saved to MongoDB in the `masd_sensors` database. Each station has its own collection named `station_<station_id>` (e.g., `station_perugia`).
 

@@ -2,7 +2,7 @@
 
 The pipeline consists of several components orchestrated by Docker Compose to create a complete data streaming and processing environment.
 
-## 🤖 Simulator
+## Simulator
 
 A Python-based producer that simulates multiple IoT sensors from different stations. It is highly configurable through the `simulator/config.json` file, which defines:
 
@@ -12,7 +12,7 @@ A Python-based producer that simulates multiple IoT sensors from different stati
 
 The simulators connect to Kafka using the `KAFKA_BOOTSTRAP_SERVERS` variable from the `.env` file and publish to topics created with the `KAFKA_TOPIC_PREFIX`.
 
-## 📬 Kafka + ZooKeeper
+## Kafka + ZooKeeper
 
 The core of the data ingestion layer, configured for high availability and fault tolerance.
 
@@ -22,7 +22,7 @@ The core of the data ingestion layer, configured for high availability and fault
     -   `KAFKA_MIN_INSYNC_REPLICAS=2`: A write is considered successful only when it has been confirmed by at least 2 of the 3 replicas. This guarantees strong consistency and durability even in the event of a broker failure.
 -   **ZooKeeper**: Used by Kafka for cluster coordination, managing broker metadata, and maintaining consumer state.
 
-## ✨ Spark
+## Spark
 
 A powerful data processing engine that consumes data from Kafka in real-time. The Spark Structured Streaming application runs on a Hadoop YARN cluster and is configured for windowed aggregations with the following parameters:
 
@@ -40,7 +40,7 @@ The application performs the following tasks:
 4.  **Performs real-time aggregations** within the defined windows to calculate statistics like average, minimum, and maximum sensor values.
 5.  **Writes the aggregated results** to MongoDB for persistence and further analysis.
 
-## 💾 MongoDB
+## MongoDB
 
 A NoSQL database used to store the aggregated results from the Spark processing job. It is configured as a 3-node replica set (`mongodb-primary`, `mongodb-secondary1`, `mongodb-secondary2`) to ensure high availability and data redundancy. The configuration is defined by these variables:
 
@@ -48,7 +48,7 @@ A NoSQL database used to store the aggregated results from the Spark processing 
 -   `MONGO_WRITE_CONCERN=majority`: A write operation is only acknowledged after it has been committed to the primary and a majority (i.e., at least one other secondary) of the replicas. This prevents data loss in case the primary node goes down.
 -   `MONGO_READ_PREFERENCE=primaryPreferred`: Read operations are directed to the primary node by default, but if it is unavailable, they are routed to secondary nodes. This ensures that reads are always possible while preferring the most up-to-date data.
 
-## 🐘 Hadoop (HDFS + YARN)
+## Hadoop (HDFS + YARN)
 
 Provides the distributed computing backbone for Spark. The cluster consists of a `namenode` and `resourcemanager`, and is designed to be scalable. You can add more `datanode` and `nodemanager` containers to expand the cluster's storage and processing capacity.
 
