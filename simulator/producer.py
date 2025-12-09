@@ -7,7 +7,6 @@ import random
 from datetime import datetime
 from kafka import KafkaProducer # pyright: ignore[reportMissingImports]
 
-# === CONFIGURAZIONE ===
 class Config:
     # Metadata
     PROJECT_NAME = "MASD"
@@ -32,13 +31,11 @@ class Config:
 
     VERBOSE_LOGGING = False
 
-# === UTILS ===
 def log(level: str, message: str):
     """Stampa messaggio con timestamp."""
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"[{timestamp}] [{level}] {message}")
 
-# === CONNESSIONE KAFKA ===
 def connect_to_kafka():
     """Connette al cluster Kafka con retry automatico."""
     #print(f"Connessione a Kafka: {KAFKA_BOOTSTRAP_SERVERS}")
@@ -62,8 +59,6 @@ def connect_to_kafka():
 
 producer = connect_to_kafka()
 
-
-# === GENERAZIONE DATI ===
 def make_payload(sensor_id, mean_value):
     """
     Genera un payload sensore.
@@ -84,8 +79,6 @@ def make_payload(sensor_id, mean_value):
         "value": value,
     }
 
-
-# === TASK SENSORE ===
 async def sensor_task(sensor_id):
     """Task asincrono che simula un sensore che pubblica dati a intervalli regolari."""
     # Offset iniziale per distribuire le pubblicazioni nel tempo
@@ -106,7 +99,6 @@ async def sensor_task(sensor_id):
         await asyncio.sleep(interval_seconds)
 
 
-# === MAIN ===
 async def main():
     print("="*70)
     print(f"{Config.PROJECT_NAME} - Sensors Simulator")

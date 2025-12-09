@@ -1,6 +1,6 @@
 services:
 
-  # === HADOOP CLUSTER ===
+  # HADOOP CLUSTER
   # I container hadoop usano un file di configurazione in formato KEY=VALUE
   # ricavato dalla guida ufficiale del container apache/hadoop.
   # https://hub.docker.com/r/apache/hadoop
@@ -31,7 +31,7 @@ services:
     networks:
       - masd-network
   
-  # === YARN CLUSTER ===
+  # YARN CLUSTER
   # Nodemanager scalabili usando --scale yarn-nodemanager=n
   yarn-resourcemanager:
     image: apache/hadoop:3

@@ -1,6 +1,6 @@
 services:
 
-  # === MONGODB REPLICA SET ===
+  # MONGODB REPLICA SET
   # 3 nodi: 1 primary + 2 secondary
   mongodb-primary:
     image: mongo:8.2
@@ -89,7 +89,7 @@ services:
     networks:
       - masd-network
 
-  # === MONGODB UI ===
+  # MONGODB UI
   # Per avviare: docker-compose --profile web-ui up -d
   mongo-express:
     image: mongo-express:latest

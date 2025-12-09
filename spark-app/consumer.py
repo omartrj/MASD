@@ -9,7 +9,6 @@ from pyspark.sql.types import ( # pyright: ignore[reportMissingImports]
     StructType, StructField, StringType, LongType
 )
 
-# === CONFIGURAZIONE ===
 class Config:
     # Metadata
     PROJECT_NAME = "MASD"
@@ -34,7 +33,6 @@ class Config:
     WATERMARK_DELAY = os.getenv("SPARK_AGGREGATE_WATERMARK")
     CHECKPOINT_DIR = os.getenv("SPARK_AGGREGATE_CHECKPOINT_DIR")
 
-# === SCHEMA DATI ===
 # value: numero (es. "42.5") o stringa (es. "<<bad_data>>")
 SENSOR_SCHEMA = StructType([
     StructField("station_name", StringType(), True),
@@ -44,13 +42,10 @@ SENSOR_SCHEMA = StructType([
     StructField("value", StringType(), True)
 ])
 
-
-# === UTILS ===
 def log(level: str, message: str):
     """Stampa messaggio con timestamp."""
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"[{timestamp}] [{level}] {message}")
-
 
 def create_spark_session():
     """Inizializza e restituisce la sessione Spark."""
@@ -62,7 +57,6 @@ def create_spark_session():
     
     spark.sparkContext.setLogLevel("ERROR")
     return spark
-
 
 def print_startup_banner():
     """Stampa le informazioni di avvio."""
@@ -79,7 +73,6 @@ def print_startup_banner():
     print(f"  - watermark: {Config.WATERMARK_DELAY}")
     print("="*70)
 
-
 def read_kafka_stream(sparkSession):
     """Legge lo stream da Kafka."""
     return sparkSession.readStream \
@@ -89,19 +82,17 @@ def read_kafka_stream(sparkSession):
         .option("startingOffsets", "latest") \
         .load()
 
-
 def parse_and_validate_data(df):
     """
     Parsa il JSON e stabilisce la validità del dato.
     - Converte 'value' in double: se riesce è valido, altrimenti è malformato.
     - Aggiunge timestamp e watermark.
     """
-    # 1. Parsing JSON
     parsed = df.select(
         from_json(col("value").cast("string"), SENSOR_SCHEMA).alias("data")
     ).select("data.*")
 
-    # 2. Check validità
+    # Check validità
     validated = parsed.withColumn(
         "value_numeric", 
         col("value").cast("double")
@@ -110,11 +101,9 @@ def parse_and_validate_data(df):
         col("value_numeric").isNotNull()
     )
 
-    # 3. Gestione tempo (timestamp e watermark)
     return validated \
         .withColumn("event_time", to_timestamp(col("timestamp") / 1000)) \
         .withWatermark("event_time", Config.WATERMARK_DELAY)
-
 
 def compute_aggregations(df):
     """Calcola le metriche aggregate su finestre temporali.
@@ -137,7 +126,6 @@ def compute_aggregations(df):
         min(when(col("is_valid"), col("value_numeric"))).alias("min_val"),
         max(when(col("is_valid"), col("value_numeric"))).alias("max_val")
     )
-
 
 def prepare_output_structure(df):
     """Ristruttura il DataFrame in una forma più leggibile"""
@@ -164,8 +152,6 @@ def prepare_output_structure(df):
         ).alias("metrics")
     )
 
-
-# === LOGICA DI SCRITTURA ===
 def write_to_mongo(batch_df, batch_id: int):
     """
     Scrive il batch su MongoDB.
@@ -174,23 +160,17 @@ def write_to_mongo(batch_df, batch_id: int):
     if batch_df.isEmpty():
         return
     
-    # Prepara la struttura dati
     final_df = prepare_output_structure(batch_df)
-    
-    # Ottimizzazione: Cache del batch per evitare ricalcoli nel loop
     final_df.cache()
     
     try:
-        # Identifica le stazioni presenti in questo batch
         stations = [row["id"] for row in final_df.select(col("station.id").alias("id")).distinct().collect()]
         
         for station_id in stations:
             # Filtra i dati per la stazione corrente
             station_data = final_df.filter(col("station.id") == station_id)
             
-            # Scrittura su MongoDB
             collection_name = f"station_{station_id}"
-            
             station_data.write \
                 .format("mongodb") \
                 .mode("append") \
@@ -208,25 +188,22 @@ def write_to_mongo(batch_df, batch_id: int):
         final_df.unpersist()
 
 
-# === MAIN ===
 def main():
-    # Inizializza Spark
     spark = create_spark_session()
 
     print_startup_banner()
     log("INFO", "Avvio applicazione Spark...")
     
-    # Pipeline di elaborazione
-    # 1. Lettura
+    # Lettura
     raw_stream = read_kafka_stream(spark)
     
-    # 2. Trasformazione
+    # Parsing
     processed_stream = parse_and_validate_data(raw_stream)
     
-    # 3. Aggregazione
+    # Aggregazione
     aggregated_stream = compute_aggregations(processed_stream)
     
-    # 4. Scrittura
+    # Scrittura
     query = aggregated_stream.writeStream \
         .foreachBatch(write_to_mongo) \
         .option("checkpointLocation", Config.CHECKPOINT_DIR) \

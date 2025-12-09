@@ -1,6 +1,6 @@
 services:
 
-  # === SPARK APPLICATION ===
+  # SPARK APPLICATION
   spark-app:
     build:
       context: ./../spark-app
@@ -42,7 +42,7 @@ services:
       - SPARK_AGGREGATE_WATERMARK=${SPARK_AGGREGATE_WATERMARK}
       - SPARK_AGGREGATE_CHECKPOINT_DIR=${SPARK_AGGREGATE_CHECKPOINT_DIR}
     volumes:
-      - hadoop-config:${HADOOP_HOME}/etc/hadoop # <-- Usa i file di configurazione generati dai container hadoop
+      - hadoop-config:${HADOOP_HOME}/etc/hadoop # Usa i file di configurazione generati dai container hadoop
     command: >
       /opt/spark/bin/spark-submit
       --master yarn

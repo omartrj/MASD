@@ -4,11 +4,9 @@ FROM spark:3.5.7-scala2.12-java11-python3-ubuntu
 # Utente root per installare pacchetti
 USER root
 
-# Installa dipendenze Python
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copia l'applicazione Spark nel container
 WORKDIR /opt/spark/work-dir
 COPY consumer.py .
 

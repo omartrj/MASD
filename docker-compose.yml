@@ -1,5 +1,4 @@
 # MASD — Monitoring & Analytics of Streaming Data
-# File principale
 name: masd
 
 include:
@@ -19,7 +18,6 @@ volumes:
   # Per questo motivo uso questo volume per condividere i file di configurazione generati tra i container hadoop e spark.
   hadoop-config:
     name: hadoop-config
-  # Volumi per i dati di MongoDB
   mongo-primary-data:
     name: mongo-primary-data
   mongo-secondary1-data:
